@@ -45,7 +45,7 @@ public class BlueprintsServices {
     /**
      *
      * @param author blueprint's author
-     * @param name   blueprint's name
+     * @param name ueprint's name
      * @return the blueprint of the given name created by the given author
      * @throws BlueprintNotFoundException if there is no such blueprint
      */
@@ -77,6 +77,15 @@ public class BlueprintsServices {
 
         try {
             return bpp.getBlueprintByName(name);
+        } catch (Exception e) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+    }
+
+    public Blueprint updateBlueprint(String author, String name, Blueprint blueprint)
+            throws BlueprintNotFoundException {
+        try {
+            return bpp.updateBlueprint(author, name, blueprint);
         } catch (Exception e) {
             throw new UnsupportedOperationException("Not supported yet.");
         }

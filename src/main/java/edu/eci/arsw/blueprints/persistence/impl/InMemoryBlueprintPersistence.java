@@ -88,4 +88,16 @@ public class InMemoryBlueprintPersistence implements BlueprintsPersistence {
         return new ArrayList<Blueprint>(blueprints.values());
     }
 
+    @Override
+    public Blueprint updateBlueprint(String author, String name, Blueprint blueprint)
+            throws BlueprintNotFoundException {
+        Tuple<String, String> key = new Tuple<>(author, name);
+        if (blueprints.containsKey(key)) {
+            blueprints.put(key, blueprint);
+            return blueprint;
+        } else {
+            throw new BlueprintNotFoundException("The given blueprint does not exist: " + blueprint);
+        }
+    }
+
 }

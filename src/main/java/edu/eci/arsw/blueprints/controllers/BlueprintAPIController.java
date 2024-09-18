@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -68,4 +69,17 @@ public class BlueprintAPIController {
             return new ResponseEntity<>("Error bla bla bla", HttpStatus.FORBIDDEN);
         }
     }
+
+    @PutMapping("/{author}/{bpname}")
+    public ResponseEntity<?> updateBlueprint(@PathVariable("author") String author,
+            @PathVariable("bpname") String bpname, @RequestBody Blueprint bp) {
+        try {
+
+            bps.updateBlueprint(author, bpname, bp);
+            return new ResponseEntity<>(bp, HttpStatus.CREATED);
+        } catch (Exception ex) {
+            return new ResponseEntity<>("Error bla bla bla", HttpStatus.FORBIDDEN);
+        }
+    }
+
 }
