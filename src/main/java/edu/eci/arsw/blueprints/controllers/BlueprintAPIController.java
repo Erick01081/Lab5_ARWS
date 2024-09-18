@@ -5,20 +5,14 @@
  */
 package edu.eci.arsw.blueprints.controllers;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import edu.eci.arsw.blueprints.services.BlueprintsServices;
 
 /**
@@ -36,12 +30,30 @@ public class BlueprintAPIController {
     public ResponseEntity<?> getBlueprint(@PathVariable("author") String author,
             @PathVariable("bpname") String bpname) {
         try {
-            bps.getBlueprint(author, bpname);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(bps.getBlueprint(author, bpname), HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity<>("Error bla bla bla", HttpStatus.NOT_FOUND);
         }
 
+    }
+
+    @GetMapping("/{author}")
+    public ResponseEntity<?> getBlueprintsByAuthor(@PathVariable("author") String author) {
+        try {
+            System.out.println(author);
+            return new ResponseEntity<>(bps.getBlueprintsByAuthor(author), HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>("Error bla bla bla", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllBlueprints() {
+        try {
+            return new ResponseEntity<>(bps.getAllBlueprints(), HttpStatus.OK);
+        } catch (Exception ex) {
+            return new ResponseEntity<>("Error bla bla bla", HttpStatus.NOT_FOUND);
+        }
     }
 
 }

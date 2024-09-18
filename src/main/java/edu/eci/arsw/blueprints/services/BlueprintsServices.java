@@ -5,18 +5,15 @@
  */
 package edu.eci.arsw.blueprints.services;
 
-import edu.eci.arsw.blueprints.model.Blueprint;
-import edu.eci.arsw.blueprints.model.Point;
-import edu.eci.arsw.blueprints.persistence.BlueprintNotFoundException;
-import edu.eci.arsw.blueprints.persistence.BlueprintsPersistence;
-import edu.eci.arsw.blueprints.persistence.impl.InMemoryBlueprintPersistence;
-
-import java.util.LinkedHashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import edu.eci.arsw.blueprints.model.Blueprint;
+import edu.eci.arsw.blueprints.persistence.BlueprintNotFoundException;
+import edu.eci.arsw.blueprints.persistence.BlueprintsPersistence;
 
 /**
  *
@@ -25,9 +22,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class BlueprintsServices {
 
-
     @Autowired
     BlueprintsPersistence bpp;
+
+    @Autowired
+    Filter filter;
 
     public void addNewBlueprint(Blueprint bp) {
         try {
@@ -41,10 +40,10 @@ public class BlueprintsServices {
 
     public List<Blueprint> getAllBlueprints() {
         return bpp.getAllBluePrints();
-    } 
+    }
 
     /**
-     * 
+     *
      * @param author blueprint's author
      * @param name   blueprint's name
      * @return the blueprint of the given name created by the given author
@@ -61,14 +60,14 @@ public class BlueprintsServices {
     }
 
     /**
-     * 
+     *
      * @param author blueprint's author
      * @return all the blueprints of the given author
      * @throws BlueprintNotFoundException if the given author doesn't exist
      */
-    public Blueprint getBlueprintsByAuthor(String author) throws BlueprintNotFoundException {
+    public List<Blueprint> getBlueprintsByAuthor(String author) throws BlueprintNotFoundException {
         try {
-            return bpp.getBlueprintByAuthor(author);
+            return bpp.getBlueprintsByAuthor(author);
         } catch (Exception e) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
@@ -84,3 +83,10 @@ public class BlueprintsServices {
     }
 
 }
+
+// ArrayList<Blueprint> bps = new ArrayList<Blueprint>();
+// List<Blueprint> a = bpp.getBlueprintsByAuthor(author);
+// for(Blueprint b: a){
+// bps.add(filter.filterPlain(b));
+// }
+// return bps;

@@ -1,10 +1,11 @@
 package edu.eci.arsw.blueprints.services;
 
-import edu.eci.arsw.blueprints.model.Blueprint;
 import org.springframework.stereotype.Service;
+
+import edu.eci.arsw.blueprints.model.Blueprint;
 
 @Service
 public interface Filter {
 
-    public abstract Blueprint filterPlain(Blueprint blueprint);
+    public Blueprint filterPlain(Blueprint blueprint);
 }

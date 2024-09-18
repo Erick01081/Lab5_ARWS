@@ -1,19 +1,15 @@
 package edu.eci.arsw.blueprints.test.services;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import edu.eci.arsw.blueprints.main.BlueprintsApp;
 
-
-
-
-@ExtendWith(SpringExtension.class) // Usa SpringExtension para JUnit 5
-@SpringBootTest
-public class ApplicationServicesTests {
+@SpringBootTest(classes = BlueprintsApp.class)
+class ApplicationServicesTests {
 
     @Test
-    public void contextLoads() {
+    void contextLoads() {
     }
 
 }

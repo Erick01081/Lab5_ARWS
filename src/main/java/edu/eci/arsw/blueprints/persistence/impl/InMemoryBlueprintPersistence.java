@@ -30,10 +30,15 @@ public class InMemoryBlueprintPersistence implements BlueprintsPersistence {
 
     public InMemoryBlueprintPersistence() {
         // load stub data
-        Point[] pts = new Point[] { new Point(140, 140), new Point(115, 115) };
-        Blueprint bp = new Blueprint("_authorname_", "_bpname_ ", pts);
+        Point[] pts = new Point[]{new Point(140, 140), new Point(115, 115)};
+        Point[] pts1 = new Point[]{new Point(14, 180), new Point(115, 15)};
+        Point[] pts2 = new Point[]{new Point(100, 140), new Point(50, 115)};
+        Blueprint bp = new Blueprint("Oscar", "plano_1", pts);
+        Blueprint bp1 = new Blueprint("Camilo", "plano_2", pts1);
+        Blueprint bp2 = new Blueprint("Camilo", "plano_3", pts2);
         blueprints.put(new Tuple<>(bp.getAuthor(), bp.getName()), bp);
-
+        blueprints.put(new Tuple<>(bp1.getAuthor(), bp1.getName()), bp1);
+        blueprints.put(new Tuple<>(bp2.getAuthor(), bp2.getName()), bp2);
     }
 
     @Override
@@ -50,15 +55,20 @@ public class InMemoryBlueprintPersistence implements BlueprintsPersistence {
         return blueprints.get(new Tuple<>(author, bprintname));
     }
 
-    @Override
-    public Blueprint getBlueprintByAuthor(String author) throws BlueprintNotFoundException {
-        for (Map.Entry<Tuple<String, String>, Blueprint> entry : blueprints.entrySet()) {
-            Blueprint value = entry.getValue();
-            if (author.equals(value.getAuthor())) {
-                return value;
+    public List<Blueprint> getBlueprintsByAuthor(String author) throws BlueprintNotFoundException {
+        List<Blueprint> authorBlueprints = new ArrayList<>();
+
+        for (Blueprint blueprint : blueprints.values()) {
+            if (author.equals(blueprint.getAuthor())) {
+                authorBlueprints.add(blueprint);
             }
         }
-        return null;
+
+        if (authorBlueprints.isEmpty()) {
+            throw new BlueprintNotFoundException("No blueprints found for author: " + author);
+        }
+
+        return authorBlueprints;
     }
 
     @Override
@@ -73,9 +83,9 @@ public class InMemoryBlueprintPersistence implements BlueprintsPersistence {
 
     }
 
-	@Override
-	public List<Blueprint> getAllBluePrints() {
+    @Override
+    public List<Blueprint> getAllBluePrints() {
         return new ArrayList<Blueprint>(blueprints.values());
-	}
+    }
 
 }

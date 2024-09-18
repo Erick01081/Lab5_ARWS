@@ -2,79 +2,90 @@ package edu.eci.arsw.blueprints.main;
 
 import java.util.Scanner;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 
 import edu.eci.arsw.blueprints.model.Blueprint;
 import edu.eci.arsw.blueprints.model.Point;
 import edu.eci.arsw.blueprints.persistence.BlueprintNotFoundException;
 import edu.eci.arsw.blueprints.services.BlueprintsServices;
 
-@SpringBootApplication(scanBasePackages = {"edu.eci.arsw.blueprints"})
-public class BlueprintsApp implements CommandLineRunner {
+@SpringBootApplication
+@ComponentScan(basePackages = { "edu.eci.arsw.blueprints" })
+public class BlueprintsApp {
 
-    @Autowired
-    BlueprintsServices bbpServices;
-
-    Scanner scanner = new Scanner(System.in);
-
-    public static void main(String arg[]) {
-        SpringApplication.run(BlueprintsApp.class, arg);
+    public static void main(String[] args) {
+        SpringApplication.run(BlueprintsApp.class, args);
     }
 
-    @Override
-    public void run(String... args) throws BlueprintNotFoundException{
-        boolean running = true;
+    @Bean
+    public CommandLineRunner run(BlueprintsServices bbpServices) {
+        return args -> {
+            Scanner scanner = new Scanner(System.in);
+            boolean running = true;
 
-        Point[] pts0=new Point[]{new Point(40, 40),new Point(15, 15)};
-        Blueprint bp0 = new Blueprint("oscar", "prueba", pts0);
-        bbpServices.addNewBlueprint(bp0);
+            while (running) {
+                System.out.println("=====Aplicación de Gestor de Planos=====");
+                System.out.println("");
+                System.out.println(
+                        "Digita una opción:\n1.Buscar plano por autor y nombre\n2.Consultar planos de un autor\n3.Registrar un nuevo plano\n4.Consultar todos los planos\n5.Salir");
+                System.out.println("");
+                String selection0 = scanner.nextLine();
 
-
-        System.out.println(bp0);
-
-        while(running){
-            System.out.println("=====Aplicación de Gestor de Planos=====");
-            System.out.println("");
-            System.out.println("Digita una opción:\n1.Buscar plano por autor y nombre\n2.Consultar planos de un autor\n3.Registrar un nuevo plano\n4.Consultar todos los planos");
-            System.out.println("");
-            String selection0 = scanner.nextLine();
-
-            if(selection0.equals("1")){
-                System.out.println("Digite el nombre del autor");
-                String name = scanner.nextLine();
-                System.out.println("Digite el nombre del plano");
-                String author = scanner.nextLine();
-                System.out.println(bbpServices.getBlueprint(name, author));
+                try {
+                    switch (selection0) {
+                        case "1":
+                            System.out.println("Digite el nombre del autor");
+                            String name = scanner.nextLine();
+                            System.out.println("Digite el nombre del plano");
+                            String author = scanner.nextLine();
+                            System.out.println(bbpServices.getBlueprint(name, author));
+                            break;
+                        case "2":
+                            System.out.println("Digite el nombre del autor");
+                            String authorName = scanner.nextLine();
+                            System.out.println(bbpServices.getBlueprintsByAuthor(authorName));
+                            break;
+                        case "3":
+                            System.out.println("Digite el nombre del autor");
+                            String newAuthor = scanner.nextLine();
+                            System.out.println("Digite el nombre del plano");
+                            String newName = scanner.nextLine();
+                            System.out.println("Digite el numero de puntos que tendrá el plano");
+                            int numberOfPoints = Integer.parseInt(scanner.nextLine());
+                            bbpServices.addNewBlueprint(
+                                    new Blueprint(newAuthor, newName, getPointsFromUser(scanner, numberOfPoints)));
+                            System.out.println("Nuevo plano registrado con éxito.");
+                            break;
+                        case "4":
+                            System.out.println("Planos existentes: ");
+                            System.out.println(bbpServices.getAllBlueprints());
+                            break;
+                        case "5":
+                            running = false;
+                            System.out.println("Saliendo de la aplicación...");
+                            System.exit(0);
+                            break;
+                        default:
+                            System.out.println("Opción no válida. Por favor, intente de nuevo.");
+                    }
+                } catch (BlueprintNotFoundException e) {
+                    System.out.println("Error: " + e.getMessage());
+                } catch (NumberFormatException e) {
+                    System.out.println("Error: Entrada no válida. Por favor, ingrese un número.");
+                } catch (Exception e) {
+                    System.out.println("Error inesperado: " + e.getMessage());
+                }
+                System.out.println(); // Add a blank line for readability
             }
-
-            else if(selection0.equals("2")){
-                System.out.println("Digite el nombre del autor");
-                String name = scanner.nextLine();
-                System.out.println(bbpServices.getBlueprintsByAuthor(name));
-            }
-
-            else if(selection0.equals("3")){
-                System.out.println("Digite el nombre del autor");
-                String author = scanner.nextLine();
-                System.out.println("Digite el nombre del plano");
-                String name = scanner.nextLine();
-                System.out.println("Digite el numero de puntos que tendrá el plano");
-                String points= scanner.nextLine();
-                int numberOfPoints= Integer.parseInt(points);
-
-                bbpServices.addNewBlueprint(new Blueprint(author,name,getPointsFromUser(numberOfPoints)));
-            }
-            else if(selection0.equals("4")){
-                System.out.println("Planos existentes: ");
-                System.out.println(bbpServices.getAllBlueprints());
-            }
-        }
+            scanner.close();
+        };
     }
 
-    private Point[] getPointsFromUser(int numberOfPoints) {
+    private Point[] getPointsFromUser(Scanner scanner, int numberOfPoints) {
         Point[] points = new Point[numberOfPoints];
 
         for (int i = 0; i < numberOfPoints; i++) {
