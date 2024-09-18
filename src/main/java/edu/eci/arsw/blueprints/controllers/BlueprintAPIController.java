@@ -10,9 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import edu.eci.arsw.blueprints.model.Blueprint;
 import edu.eci.arsw.blueprints.services.BlueprintsServices;
 
 /**
@@ -56,4 +59,13 @@ public class BlueprintAPIController {
         }
     }
 
+    @PostMapping
+    public ResponseEntity<?> addNewBlueprint(@RequestBody Blueprint bp) {
+        try {
+            bps.addNewBlueprint(bp);
+            return new ResponseEntity<>(bp, HttpStatus.CREATED);
+        } catch (Exception ex) {
+            return new ResponseEntity<>("Error bla bla bla", HttpStatus.FORBIDDEN);
+        }
+    }
 }
