@@ -63,6 +63,7 @@ public class BlueprintAPIController {
     @PostMapping
     public ResponseEntity<?> addNewBlueprint(@RequestBody Blueprint bp) {
         try {
+            System.out.println(bp);
             bps.addNewBlueprint(bp);
             return new ResponseEntity<>(bp, HttpStatus.CREATED);
         } catch (Exception ex) {

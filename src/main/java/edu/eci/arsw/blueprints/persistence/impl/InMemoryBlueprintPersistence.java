@@ -13,13 +13,29 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 import edu.eci.arsw.blueprints.model.Blueprint;
+import edu.eci.arsw.blueprints.model.Point;
 import edu.eci.arsw.blueprints.persistence.BlueprintNotFoundException;
 import edu.eci.arsw.blueprints.persistence.BlueprintPersistenceException;
 import edu.eci.arsw.blueprints.persistence.BlueprintsPersistence;
+import org.springframework.stereotype.Component;
 
+@Component
 public class InMemoryBlueprintPersistence implements BlueprintsPersistence {
     private final ConcurrentHashMap<String, Blueprint> blueprints = new ConcurrentHashMap<>();
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
+
+    public InMemoryBlueprintPersistence() {
+        // load stub data
+        Point[] pts = new Point[]{new Point(140, 140), new Point(115, 115)};
+        Point[] pts1 = new Point[]{new Point(14, 180), new Point(115, 15)};
+        Point[] pts2 = new Point[]{new Point(100, 140), new Point(50, 115)};
+        Blueprint bp = new Blueprint("Oscar", "plano_1", pts);
+        Blueprint bp1 = new Blueprint("Camilo", "plano_2", pts1);
+        Blueprint bp2 = new Blueprint("Camilo", "plano_3", pts2);
+        blueprints.put(String.valueOf(new Tuple<>(bp.getAuthor(), bp.getName())), bp);
+        blueprints.put(String.valueOf(new Tuple<>(bp1.getAuthor(), bp1.getName())), bp1);
+        blueprints.put(String.valueOf(new Tuple<>(bp2.getAuthor(), bp2.getName())), bp2);
+    }
 
     @Override
     public void saveBlueprint(Blueprint bp) throws BlueprintPersistenceException {
