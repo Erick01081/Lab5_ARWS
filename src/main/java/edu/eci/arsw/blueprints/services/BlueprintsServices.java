@@ -35,7 +35,6 @@ public class BlueprintsServices {
             e.printStackTrace();
             throw new UnsupportedOperationException("Not supported yet.");
         }
-
     }
 
     public List<Blueprint> getAllBlueprints() {
@@ -91,11 +90,10 @@ public class BlueprintsServices {
         }
     }
 
-}
+    public Blueprint filterBlueprint(Blueprint blueprint){
+        return filter.filterPlain(blueprint);
+    }
 
-// ArrayList<Blueprint> bps = new ArrayList<Blueprint>();
-// List<Blueprint> a = bpp.getBlueprintsByAuthor(author);
-// for(Blueprint b: a){
-// bps.add(filter.filterPlain(b));
-// }
-// return bps;
+
+
+}
