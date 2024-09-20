@@ -5,6 +5,7 @@
  */
 package edu.eci.arsw.blueprints.controllers;
 
+import edu.eci.arsw.blueprints.persistence.BlueprintNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,8 +36,8 @@ public class BlueprintAPIController {
             @PathVariable("bpname") String bpname) {
         try {
             return new ResponseEntity<>(bps.getBlueprint(author, bpname), HttpStatus.OK);
-        } catch (Exception ex) {
-            return new ResponseEntity<>("Error bla bla bla", HttpStatus.NOT_FOUND);
+        } catch (BlueprintNotFoundException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
         }
 
     }
@@ -46,8 +47,8 @@ public class BlueprintAPIController {
         try {
             System.out.println(author);
             return new ResponseEntity<>(bps.getBlueprintsByAuthor(author), HttpStatus.OK);
-        } catch (Exception ex) {
-            return new ResponseEntity<>("Error bla bla bla", HttpStatus.NOT_FOUND);
+        } catch (BlueprintNotFoundException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
