@@ -1,28 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package edu.eci.arsw.blueprints.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import edu.eci.arsw.blueprints.model.Blueprint;
+import edu.eci.arsw.blueprints.persistence.BlueprintNotFoundException;
+import edu.eci.arsw.blueprints.persistence.BlueprintPersistenceException;
 import edu.eci.arsw.blueprints.services.BlueprintsServices;
 
-/**
- *
- * @author hcadavid
- */
 @RestController
 @RequestMapping(value = "/blueprints")
 public class BlueprintAPIController {
@@ -32,55 +19,47 @@ public class BlueprintAPIController {
 
     @GetMapping("/{author}/{bpname}")
     public ResponseEntity<?> getBlueprint(@PathVariable("author") String author,
-            @PathVariable("bpname") String bpname) {
+                                          @PathVariable("bpname") String bpname) {
         try {
             return new ResponseEntity<>(bps.getBlueprint(author, bpname), HttpStatus.OK);
-        } catch (Exception ex) {
-            return new ResponseEntity<>("Error bla bla bla", HttpStatus.NOT_FOUND);
+        } catch (BlueprintNotFoundException ex) {
+            return new ResponseEntity<>("Blueprint not found: " + ex.getMessage(), HttpStatus.NOT_FOUND);
         }
-
     }
 
     @GetMapping("/{author}")
     public ResponseEntity<?> getBlueprintsByAuthor(@PathVariable("author") String author) {
         try {
-            System.out.println(author);
             return new ResponseEntity<>(bps.getBlueprintsByAuthor(author), HttpStatus.OK);
-        } catch (Exception ex) {
-            return new ResponseEntity<>("Error bla bla bla", HttpStatus.NOT_FOUND);
+        } catch (BlueprintNotFoundException ex) {
+            return new ResponseEntity<>("No blueprints found for author: " + ex.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @GetMapping
     public ResponseEntity<?> getAllBlueprints() {
-        try {
-            return new ResponseEntity<>(bps.getAllBlueprints(), HttpStatus.OK);
-        } catch (Exception ex) {
-            return new ResponseEntity<>("Error bla bla bla", HttpStatus.NOT_FOUND);
-        }
+        return new ResponseEntity<>(bps.getAllBlueprints(), HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<?> addNewBlueprint(@RequestBody Blueprint bp) {
         try {
-            System.out.println(bp);
             bps.addNewBlueprint(bp);
             return new ResponseEntity<>(bp, HttpStatus.CREATED);
-        } catch (Exception ex) {
-            return new ResponseEntity<>("Error bla bla bla", HttpStatus.FORBIDDEN);
+        } catch (BlueprintPersistenceException ex) {
+            return new ResponseEntity<>("Error creating blueprint: " + ex.getMessage(), HttpStatus.CONFLICT);
         }
     }
 
     @PutMapping("/{author}/{bpname}")
     public ResponseEntity<?> updateBlueprint(@PathVariable("author") String author,
-            @PathVariable("bpname") String bpname, @RequestBody Blueprint bp) {
+                                             @PathVariable("bpname") String bpname,
+                                             @RequestBody Blueprint bp) {
         try {
-
-            bps.updateBlueprint(author, bpname, bp);
-            return new ResponseEntity<>(bp, HttpStatus.CREATED);
-        } catch (Exception ex) {
-            return new ResponseEntity<>("Error bla bla bla", HttpStatus.FORBIDDEN);
+            Blueprint updatedBp = bps.updateBlueprint(author, bpname, bp);
+            return new ResponseEntity<>(updatedBp, HttpStatus.OK);
+        } catch (BlueprintNotFoundException ex) {
+            return new ResponseEntity<>("Blueprint not found: " + ex.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
-
 }
