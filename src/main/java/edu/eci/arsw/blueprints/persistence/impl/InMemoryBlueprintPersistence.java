@@ -12,12 +12,13 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
+import org.springframework.stereotype.Component;
+
 import edu.eci.arsw.blueprints.model.Blueprint;
 import edu.eci.arsw.blueprints.model.Point;
 import edu.eci.arsw.blueprints.persistence.BlueprintNotFoundException;
 import edu.eci.arsw.blueprints.persistence.BlueprintPersistenceException;
 import edu.eci.arsw.blueprints.persistence.BlueprintsPersistence;
-import org.springframework.stereotype.Component;
 
 @Component
 public class InMemoryBlueprintPersistence implements BlueprintsPersistence {
@@ -42,7 +43,7 @@ public class InMemoryBlueprintPersistence implements BlueprintsPersistence {
         lock.writeLock().lock();
         try {
             String key = getKey(bp.getAuthor(), bp.getName());
-            if (blueprints.containsKey(key)) {
+            if (blueprints.putIfAbsent(key, bp) != null) {
                 throw new BlueprintPersistenceException("The given blueprint already exists: " + bp);
             }
             blueprints.put(key, bp);
@@ -107,17 +108,13 @@ public class InMemoryBlueprintPersistence implements BlueprintsPersistence {
 
     @Override
     public Blueprint updateBlueprint(String author, String name, Blueprint blueprint) throws BlueprintNotFoundException {
-        lock.writeLock().lock();
-        try {
-            String key = getKey(author, name);
-            if (!blueprints.containsKey(key)) {
-                throw new BlueprintNotFoundException("The blueprint does not exist: " + author + " - " + name);
-            }
-            blueprints.put(key, blueprint);
-            return blueprint;
-        } finally {
-            lock.writeLock().unlock();
+        String key = getKey(author, name);
+        if (!blueprints.containsKey(key)) {
+            throw new BlueprintNotFoundException("The blueprint does not exist: " + author + " - " + name);
         }
+        blueprints.computeIfPresent(key, (k, oldBlueprint) -> blueprint);
+        
+        return blueprint;
     }
 
     private String getKey(String author, String name) {
